@@ -1,0 +1,154 @@
+<!-- navbar starts -->
+<nav class="navbar navbar-light bg-primary">
+    <div class="container-fluid title">
+       <h1 class ="emp_text">Employee Dashboard</h1> 
+       <div class="d-flex">
+        <button (click)="onClickAddEmployee()"  type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#exampleModal">Add Employee</button>
+       </div>
+    </div>
+</nav>
+
+<!-- <navbar ends -->
+
+<!-- Search box name -->
+<div class="d-flex">
+    <div class="mx-2 col-md-2 mt-3">
+        <input class="form-control" list="datalistOptions" id="nameDataList" placeholder="Type to search name..."
+        (change)="onSearchName($event)">
+        <datalist id="datalistOptions">
+          <option *ngFor="let row of employeeDetails" [value]="row.fullName">
+        </datalist>
+    </div>
+    
+    <!-- Search box company -->
+    <div class="mx-2 col-md-2 mt-3">
+        <input class="form-control" list="companyDataList" id="companyDataList" placeholder="Type to search company..."
+        (change)="onSearchCompany($event)">
+        <datalist id="companyDataList">
+          <option *ngFor="let row of employeeDetails" [value]="row.company">
+        </datalist>
+    </div>
+
+        <!-- Search box email -->
+        <div class="mx-2 col-md-2 mt-3">
+            <input class="form-control" list="emailDataList" id="emailDataList" placeholder="Type to search email..."
+            (change)="onSearchEmail($event)">
+            <datalist id="emailDataList">
+              <option *ngFor="let row of employeeDetails" [value]="row.email">
+            </datalist>
+        </div>
+
+</div>
+
+<!-- <employee listing table starts -->
+
+<table class="table mt-3 table_view">
+    <thead>
+        <tr>
+            <th scope="col">Full Name</th>
+            <th scope="col">DOB</th>
+            <th scope="col">Email</th>
+            <th scope="col">Phone</th>
+            <th scope="col">Gender</th>
+            <th scope="col">Company</th>
+            <th scope="col">Position</th>
+            <th scope="col">Action</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr *ngFor="let row of employeeDetails | paginate : {itemsPerPage: 2, currentPage: p};">
+            <td>{{row.fullName}}</td>
+            <td>{{row.dob | date}}</td>
+            <td>{{row.email}}</td>
+            <td>{{row.phone}}</td>
+            <td *ngIf="row.gender === 'true'">F</td>
+            <td *ngIf="row.gender === 'false'">M</td>
+            <td>{{row.company}}</td>
+            <td>{{row.position}}</td>
+            
+            <td>
+                <button class="btn btn-info"  type="button"  data-bs-toggle="modal" data-bs-target="#exampleModal" (click)="onEdit(row)">Edit</button>
+                <button class="btn btn-danger mx-3" (click)="deleteEmployee(row)">Delete</button>
+            </td>
+
+        </tr>
+    </tbody>
+</table>
+
+
+  <!-- Modal -->
+  <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Employee Details</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            <form [formGroup] = "formValue">
+                <div class="mb-3">
+                  <label for="exampleInputName" class="form-label">Full Name</label>
+                  <input type="text" formControlName="fullName" class="form-control" id="exampleInputName" aria-describedby="fullname">
+                </div>
+
+                <div class="mb-3">
+                  <label for="exampleInputDOB" class="form-label">DOB</label>
+                  <input type="text" formControlName="dob" class="form-control" id="exampleInputDOB">
+                </div>
+
+                <div class="mb-3">
+                    <label for="exampleInputEmail" class="form-label">Email</label>
+                    <input type="text" formControlName="email" class="form-control" id="exampleInputEmail">
+                  </div>
+
+                  <div class="mb-3">
+                    <label for="exampleInputPhone" class="form-label">Phone</label>
+                    <input type="number" formControlName="phone" class="form-control" id="exampleInputPhone">
+                  </div>
+
+                  <div class="mb-3">
+                    <label for="exampleInputGender" class="form-label pr-3">Gender</label>
+                    <div class="d-flex">
+                        <div class="form-check mx-3">
+                            <input class="form-check-input"
+                            [(ngModel)] = "gender"  [ngModelOptions]="{standalone: true}" type="radio"  value ="true" name="gender" id="flexRadioDefault1" 
+                            [checked]="(formValue.value.gender === 'true')">
+                            <label class="form-check-label"  for="flexRadioDefault1">
+                              F
+                            </label>
+                          </div>
+                          <div class="form-check">
+                            <input class="form-check-input"  [(ngModel)] = "gender" [ngModelOptions]="{standalone: true}" type="radio" value="false" name="gender" id="flexRadioDefault2" 
+                            [checked]="(formValue.value.gender === 'false')">
+                            
+                            <label class="form-check-label"  for="flexRadioDefault2">
+                              M
+                            </label>
+                      
+                          </div>
+
+                    </div>
+                  </div>
+
+                  <div class="mb-3">
+                    <label for="exampleInputCompany" class="form-label">Company</label>
+                    <input type="text" formControlName="company" class="form-control" id="exampleInputCompany">
+                  </div>
+
+                  <div class="mb-3">
+                    <label for="exampleInputPosition" class="form-label">Position</label>
+                    <input type="text" formControlName="position" class="form-control" id="exampleInputPosition">
+                  </div>
+              </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" id = "cancel" data-bs-dismiss="modal">Close</button>
+          <button type="button" *ngIf ="showAdd" class="btn btn-primary" (click)="newEmployeeData()">Add</button>
+          <button type="button"*ngIf="showUpdate" class="btn btn-primary" (click)="updateEmployeeDetails()">Update</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <pagination-controls (pageChange)="p=$event"></pagination-controls>
